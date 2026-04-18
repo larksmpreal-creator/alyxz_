@@ -29,7 +29,7 @@
             overflow-x: hidden;
         }
         
-        /* Video Background - NEW VIDEO - 130% Zoom - MUTED */
+        /* Video Background - NEW START TIME 52s - 130% Zoom - MUTED */
         .video-bg {
             position: fixed;
             top: 0;
@@ -571,16 +571,16 @@
     </style>
 </head>
 <body>
-    <!-- Click to Start Overlay (browser requires interaction for audio) -->
+    <!-- Click to Start Overlay -->
     <div class="start-overlay" id="startOverlay">
         <div class="start-text">Click to Enter</div>
         <div class="start-subtext">Click anywhere to start the music</div>
     </div>
     
-    <!-- Video Background - NEW VIDEO at 23s - MUTED - 130% Zoom -->
+    <!-- Video Background - START AT 52 SECONDS - 130% Zoom - MUTED -->
     <div class="video-bg">
         <iframe 
-            src="https://www.youtube-nocookie.com/embed/0EWcxtOAJE4?playlist=0EWcxtOAJE4&autoplay=1&iv_load_policy=3&loop=1&start=23&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+            src="https://www.youtube-nocookie.com/embed/0EWcxtOAJE4?playlist=0EWcxtOAJE4&autoplay=1&iv_load_policy=3&loop=1&start=52&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
             allow="autoplay; encrypted-media"
             allowfullscreen="false">
         </iframe>
@@ -769,7 +769,6 @@
                 audioPlayer.unMute();
                 isPlaying = true;
             } else {
-                // If player not ready yet, wait a bit
                 const checkInterval = setInterval(() => {
                     if (audioPlayer && audioPlayer.playVideo) {
                         audioPlayer.playVideo();
