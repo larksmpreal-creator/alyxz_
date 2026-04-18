@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alyxz | Minecraft Developer</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -22,14 +23,16 @@
             --dark: #3e2723;
         }
         
-        body {
+        html, body {
             font-family: 'Inter', sans-serif;
             color: #fff;
             line-height: 1.6;
             overflow-x: hidden;
+            height: 100%;
+            width: 100%;
         }
         
-        /* Video Background - NEW START TIME 52s - 130% Zoom - MUTED */
+        /* Video Background - DESKTOP: 130% zoom | MOBILE: Fill screen */
         .video-bg {
             position: fixed;
             top: 0;
@@ -41,11 +44,48 @@
         }
         
         .video-bg iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
             width: 100vw;
             height: 100vh;
             border: none;
-            transform: scale(1.3);
+            transform: translate(-50%, -50%) scale(1.3);
             transform-origin: center center;
+            object-fit: cover;
+        }
+        
+        /* MOBILE FIX: Remove zoom, fill screen properly */
+        @media (max-width: 768px) {
+            .video-bg iframe {
+                width: 100vw;
+                height: 100vh;
+                transform: translate(-50%, -50%) scale(1);
+                /* Force aspect ratio to fill without vertical zoom */
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+            
+            /* Alternative: Cover the screen without distortion */
+            .video-bg {
+                width: 100%;
+                height: 100%;
+            }
+            
+            .video-bg iframe {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                min-width: 100%;
+                min-height: 100%;
+                width: auto;
+                height: auto;
+                transform: translate(-50%, -50%);
+                object-fit: cover;
+            }
         }
         
         /* Audio Player Widget */
@@ -68,6 +108,21 @@
         
         .audio-container.active {
             display: flex;
+        }
+        
+        @media (max-width: 768px) {
+            .audio-container {
+                width: 200px;
+                height: 50px;
+                bottom: 10px;
+                right: 10px;
+                padding: 0 0.75rem;
+            }
+            
+            .audio-btn {
+                width: 32px;
+                height: 32px;
+            }
         }
         
         .audio-btn {
@@ -152,6 +207,15 @@
             50% { opacity: 0.6; }
         }
         
+        @media (max-width: 768px) {
+            .start-text {
+                font-size: 2rem;
+            }
+            .start-subtext {
+                font-size: 0.9rem;
+            }
+        }
+        
         /* Dark overlay for text readability */
         .overlay {
             position: fixed;
@@ -178,6 +242,15 @@
             background: rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+            .nav-links {
+                display: none;
+            }
         }
         
         .logo {
@@ -255,7 +328,7 @@
         
         h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(3rem, 6vw, 5rem);
+            font-size: clamp(2.5rem, 6vw, 5rem);
             font-weight: 700;
             margin-bottom: 1rem;
             color: #fff;
@@ -275,6 +348,12 @@
             text-shadow: 0 1px 5px rgba(0,0,0,0.3);
         }
         
+        @media (max-width: 768px) {
+            .tagline {
+                font-size: 1.1rem;
+            }
+        }
+        
         .cta-group {
             display: flex;
             gap: 1rem;
@@ -292,6 +371,13 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.95rem;
+        }
+        
+        @media (max-width: 768px) {
+            .btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.9rem;
+            }
         }
         
         .btn-primary {
@@ -327,6 +413,12 @@
             z-index: 1;
         }
         
+        @media (max-width: 768px) {
+            .services {
+                padding: 4rem 1rem;
+            }
+        }
+        
         .section-header {
             text-align: center;
             margin-bottom: 4rem;
@@ -334,7 +426,7 @@
         
         .section-header h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             margin-bottom: 1rem;
             color: #fff;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -353,6 +445,13 @@
             gap: 2rem;
         }
         
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+        
         .service-card {
             background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
@@ -361,6 +460,12 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .service-card {
+                padding: 2rem;
+            }
         }
         
         .service-card:hover {
@@ -418,6 +523,12 @@
             z-index: 1;
         }
         
+        @media (max-width: 768px) {
+            .about {
+                padding: 4rem 1rem;
+            }
+        }
+        
         .about-container {
             max-width: 800px;
             margin: 0 auto;
@@ -426,7 +537,7 @@
         
         .about h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             margin-bottom: 1.5rem;
             color: #fff;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -437,6 +548,12 @@
             color: rgba(255,255,255,0.8);
             line-height: 1.9;
             margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .about p {
+                font-size: 1rem;
+            }
         }
         
         .about strong {
@@ -479,6 +596,12 @@
             z-index: 1;
         }
         
+        @media (max-width: 768px) {
+            .contact {
+                padding: 4rem 1rem;
+            }
+        }
+        
         .contact-box {
             max-width: 600px;
             margin: 0 auto;
@@ -490,9 +613,15 @@
             backdrop-filter: blur(10px);
         }
         
+        @media (max-width: 768px) {
+            .contact-box {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
         .contact-box h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
+            font-size: clamp(1.75rem, 5vw, 2rem);
             margin-bottom: 1rem;
             color: #fff;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -549,25 +678,6 @@
         html {
             scroll-behavior: smooth;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav {
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                display: none;
-            }
-            
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .audio-container {
-                width: 240px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -577,7 +687,7 @@
         <div class="start-subtext">Click anywhere to start the music</div>
     </div>
     
-    <!-- Video Background - START AT 52 SECONDS - 130% Zoom - MUTED -->
+    <!-- Video Background - DESKTOP: 130% zoom | MOBILE: Fill screen -->
     <div class="video-bg">
         <iframe 
             src="https://www.youtube-nocookie.com/embed/0EWcxtOAJE4?playlist=0EWcxtOAJE4&autoplay=1&iv_load_policy=3&loop=1&start=52&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
