@@ -1,262 +1,800 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Alyxz — Developer</title>  
-  <style>  
-    * {  
-      margin: 0;  
-      padding: 0;  
-      box-sizing: border-box;  
-    }  body {  
-  font-family: Arial, sans-serif;  
-  background: #0a0a0a;  
-  color: #fff;  
-  scroll-behavior: smooth;  
-}  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alyxz | Minecraft Developer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cream: #faf8f5;
+            --brown: #5d4037;
+            --orange: #e67e22;
+            --green: #27ae60;
+            --soft: #8d6e63;
+            --dark: #3e2723;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Video Background - NEW VIDEO - 130% Zoom - MUTED */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .video-bg iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            transform: scale(1.3);
+            transform-origin: center center;
+        }
+        
+        /* Audio Player Widget */
+        .audio-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 280px;
+            height: 60px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.7);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 1rem;
+        }
+        
+        .audio-container.active {
+            display: flex;
+        }
+        
+        .audio-btn {
+            background: var(--orange);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        
+        .audio-btn:hover {
+            transform: scale(1.1);
+            background: #d35400;
+        }
+        
+        .audio-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .audio-title {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .audio-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Click to start overlay */
+        .start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.5s;
+        }
+        
+        .start-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .start-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            animation: pulse 2s infinite;
+            font-weight: 700;
+        }
+        
+        .start-subtext {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Dark overlay for text readability */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255,255,255,0.8);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--orange);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(39,174,96,0.2);
+            border: 1px solid rgba(39,174,96,0.4);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--green);
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .tagline {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+        }
+        
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            box-shadow: 0 4px 15px rgba(230,126,34,0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230,126,34,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+            transform: translateY(-2px);
+        }
+        
+        /* Services Section */
+        .services {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .section-header p {
+            color: rgba(255,255,255,0.8);
+            max-width: 500px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .service-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border-color: rgba(230,126,34,0.3);
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .service-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--orange), #d35400);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(230,126,34,0.3);
+        }
+        
+        .service-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: #fff;
+        }
+        
+        .service-card p {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        /* Beta Tag */
+        .beta-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--orange);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* About Section */
+        .about {
+            padding: 6rem 2rem;
+            background: rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .about h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .about p {
+            font-size: 1.15rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about strong {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        /* Skills Tags */
+        .skills {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .skill-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .skill-tag:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.15);
+        }
+        
+        /* Contact Section */
+        .contact {
+            padding: 6rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .contact-box {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 3rem;
+            background: rgba(0,0,0,0.5);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-box h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .contact-box > p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .contact-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .contact-link {
+            padding: 1rem 2rem;
+            background: rgba(88, 101, 242, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(88, 101, 242, 0.4);
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .contact-link:hover {
+            background: rgba(88, 101, 242, 0.4);
+            border-color: rgba(88, 101, 242, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .audio-container {
+                width: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Click to Start Overlay (browser requires interaction for audio) -->
+    <div class="start-overlay" id="startOverlay">
+        <div class="start-text">Click to Enter</div>
+        <div class="start-subtext">Click anywhere to start the music</div>
+    </div>
+    
+    <!-- Video Background - NEW VIDEO at 23s - MUTED - 130% Zoom -->
+    <div class="video-bg">
+        <iframe 
+            src="https://www.youtube-nocookie.com/embed/0EWcxtOAJE4?playlist=0EWcxtOAJE4&autoplay=1&iv_load_policy=3&loop=1&start=23&mute=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&showinfo=0"
+            allow="autoplay; encrypted-media"
+            allowfullscreen="false">
+        </iframe>
+    </div>
+    
+    <!-- Hidden Audio Player Container -->
+    <div id="audioPlayer" style="display: none;"></div>
+    
+    <!-- Audio Widget -->
+    <div class="audio-container" id="audioContainer">
+        <button class="audio-btn" id="audioBtn">⏸</button>
+        <div class="audio-info">
+            <div class="audio-label">Now Playing</div>
+            <div class="audio-title">🎵 Background Music</div>
+        </div>
+    </div>
+    
+    <!-- Dark Overlay -->
+    <div class="overlay"></div>
+    
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Alyxz</div>
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="badge">
+                <span>🟢</span>
+                <span>Available for Projects</span>
+            </div>
+            <h1>Hey, I'm Alyxz</h1>
+            <p class="tagline">I help Minecraft servers run smoother, look better, and feel unique. From custom plugins to server optimization, I've got you covered.</p>
+            <div class="cta-group">
+                <a href="#services" class="btn btn-primary">See What I Do</a>
+                <a href="#contact" class="btn btn-secondary">Contact Me</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="section-header">
+            <h2>How I Can Help</h2>
+            <p>Practical solutions for Minecraft servers that want to stand out</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🤖</div>
+                <h3>Custom Bot <span class="beta-tag">Beta</span></h3>
+                <p>Discord bots that integrate with your Minecraft server. Player stats, server status, moderation tools, and custom commands—all connected to your world in real-time.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <h3>Bug Fixes</h3>
+                <p>Server crashing? Plugins conflicting? I'll track down the issue, fix the code, and make sure everything runs stable. No more random lag spikes or mysterious errors.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📋</div>
+                <h3>Custom Tab & UI</h3>
+                <p>Make your server look professional with custom tab lists, animated headers, player sorting, and sleek scoreboards that match your server's theme.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📜</div>
+                <h3>Custom Skript</h3>
+                <p>Quick custom features without heavy plugins. Perfect for smaller servers that need unique mechanics fast—custom commands, events, and game logic.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🚀</div>
+                <h3>Server Optimization</h3>
+                <p>TPS dropping? Chunk loading slow? I'll optimize your server config, reduce lag, and get you back to that smooth 20 TPS your players deserve.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📚</div>
+                <h3>Always Learning</h3>
+                <p>Currently leveling up my Java and Python skills. Every project teaches me something new, which means better solutions for your server.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="about-container">
+            <h2>About Me</h2>
+            <p>
+                I'm <strong>Alyxz</strong>—a Minecraft developer who genuinely enjoys solving server problems. I started because I wanted my own server to run better, and now I help others do the same.
+            </p>
+            <p>
+                I believe every server should feel unique. Whether it's through custom plugins that add new gameplay, or just making sure everything runs without crashes, I'm here to help your community have a better experience.
+            </p>
+            <div class="skills">
+                <span class="skill-tag">Java</span>
+                <span class="skill-tag">Python</span>
+                <span class="skill-tag">Paper/Spigot</span>
+                <span class="skill-tag">Skript</span>
+                <span class="skill-tag">MySQL</span>
+                <span class="skill-tag">Server Config</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section - Discord Only -->
+    <section class="contact" id="contact">
+        <div class="contact-box">
+            <h2>Let's Work Together</h2>
+            <p>Have a project in mind? Hit me up on Discord.</p>
+            <div class="contact-links">
+                <a href="http://discordapp.com/users/1493147201545830511" target="_blank" class="contact-link">💬 Discord</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <p>Made by Alyxz</p>
+    </footer>
 
-/* Hero Section */  
-.hero {  
-  display: flex;  
-  align-items: center;  
-  justify-content: space-between;  
-  height: 100vh;  
-  padding: 0 8%;  
-  gap: 3rem;  
-}  
-
-.hero-text {  
-  flex: 1;  
-}  
-
-.hero h1 {  
-  font-size: 3rem;  
-}  
-
-.hero h1 span {  
-  color: #a855f7; /* purple accent */  
-}  
-
-.hero h2 {  
-  font-size: 2rem;  
-  margin-top: 0.5rem;  
-  color: #a855f7;  
-}  
-
-.hero p {  
-  margin: 1rem 0;  
-  color: #bbb;  
-  line-height: 1.6;  
-  max-width: 500px;  
-}  
-
-/* Button */  
-.btn {  
-  display: inline-block;  
-  margin: 1rem 0;  
-  padding: 0.7rem 1.5rem;  
-  border: 2px solid #a855f7;  
-  border-radius: 30px;  
-  color: #a855f7;  
-  text-decoration: none;  
-  font-weight: bold;  
-  transition: 0.3s;  
-}  
-
-.btn:hover {  
-  background: #a855f7;  
-  color: #fff;  
-}  
-
-/* Social Icons */  
-.social {  
-  margin-top: 1rem;  
-}  
-
-.social a {  
-  display: inline-block;  
-  margin-right: 10px;  
-  font-size: 1.2rem;  
-  text-decoration: none;  
-  color: #fff;  
-  transition: 0.3s;  
-}  
-
-.social a:hover {  
-  color: #a855f7;  
-}  
-
-/* Hero Image */  
-.hero-img {  
-  flex: 1;  
-  display: flex;  
-  justify-content: center;  
-  align-items: center;  
-}  
-
-.hero-img img {  
-  max-width: 350px;  
-  border-radius: 12px;  
-  box-shadow: 0 0 25px #a855f7;  
-  transition: 0.3s;  
-}  
-
-.hero-img img:hover {  
-  transform: scale(1.05);  
-  box-shadow: 0 0 40px #a855f7;  
-}  
-
-/* Navbar */  
-.navbar {  
-  position: fixed;  
-  top: 50%;  
-  right: 20px;  
-  transform: translateY(-50%);  
-  display: flex;  
-  flex-direction: column;  
-  gap: 15px;  
-}  
-
-.navbar a {  
-  color: #fff;  
-  text-decoration: none;  
-  font-size: 1rem;  
-  transition: 0.3s;  
-}  
-
-.navbar a:hover {  
-  color: #a855f7;  
-}  
-
-/* Section Styling */  
-.plugins {  
-  min-height: 100vh;  
-  padding: 4rem 8%;  
-  background: #111;  
-}  
-
-.plugins h2 {  
-  font-size: 2rem;  
-  margin-bottom: 1rem;  
-  color: #a855f7;  
-}  
-
-.plugin-list {  
-  display: flex;  
-  flex-direction: column;  
-  gap: 1rem;  
-}  
-
-.plugin-list a,  
-.plugin-list span {  
-  display: block;  
-  background: #1a1a1a;  
-  padding: 0.8rem 1.2rem;  
-  border-radius: 8px;  
-  text-decoration: none;  
-  color: #fff;  
-  transition: 0.3s;  
-}  
-
-.plugin-list a:hover {  
-  background: #a855f7;  
-  color: #000;  
-}  
-
-/* DEV Section */  
-.dev-section {  
-  min-height: 100vh;  
-  padding: 4rem 8%;  
-  background: #0f0f0f;  
-  text-align: center;  
-}  
-
-.dev-section h2 {  
-  font-size: 2rem;  
-  margin-bottom: 1.5rem;  
-  color: #a855f7;  
-}  
-
-.dev-section img {  
-  max-width: 400px;  
-  border-radius: 12px;  
-  box-shadow: 0 0 25px #a855f7;  
-  transition: 0.3s;  
-}  
-
-.dev-section img:hover {  
-  transform: scale(1.05);  
-  box-shadow: 0 0 40px #a855f7;  
-}  
-
-/* Responsive */  
-@media (max-width: 900px) {  
-  .hero {  
-    flex-direction: column;  
-    text-align: center;  
-  }  
-
-  .hero-img {  
-    margin-top: 2rem;  
-  }  
-
-  .navbar {  
-    flex-direction: row;  
-    bottom: 20px;  
-    top: auto;  
-    right: 50%;  
-    transform: translateX(50%);  
-  }  
-
-  .dev-section img {  
-    max-width: 90%;  
-  }  
-}
-
-  </style>  
-</head>  
-<body>    <!-- Hero Section -->    <section id="home" class="hero">  
-    <div class="hero-text">  
-      <h1>Hi, I'm <span>Alyxz</span></h1>  
-      <h2>Developer</h2>  
-      <p>Aspiring Java Stack Developer — still learning 🚀</p>  
-      <a href="#discord" class="btn">Hire Me</a>  <div class="social">  
-    <a href="#">🌐</a>  
-    <a href="#">🐦</a>  
-    <a href="#">💼</a>  
-    <a href="#">📷</a>  
-  </div>  
-</div>  
-
-<div class="hero-img">  
-  <a href="https://ibb.co/d0vxkcrf" target="_blank">  
-    <img src="https://i.ibb.co/6RSLDZmy/tiktokio-com-uz04-FJKo-Pp-Esc-Gv-W8c-UJ.jpg"   
-         alt="Alyxz Image" border="0">  
-  </a>  
-</div>
-
-  </section>    <!-- Plugins Section -->    <section id="plugins" class="plugins">  
-    <h2>My Plugins</h2>  
-    <div class="plugin-list">  
-      <a href="https://builtbybit.com/resources/donutcrates-pro-choosable-rewards.40973/" target="_blank">📦 DonutCrates</a>  
-      <a href="https://builtbybit.com/resources/donuttools.48304/" target="_blank">🛠 DonutTools</a>  
-      <a href="https://builtbybit.com/resources/donutorders.56854/" target="_blank">📝 DonutOrders</a>  
-      <a href="https://builtbybit.com/resources/zelauction-ultimate-auction-house.43698/" target="_blank">💰 ZelAuction</a>  
-      <span>⚡ Many Skripts...</span>  
-    </div>  
-  </section>    <!-- DEV Section -->    <section id="dev" class="dev-section">  
-    <h2>DEV</h2>  
-    <a href="https://discord.gg/QTb963Jt" target="_blank">  
-      <img src="https://i.ibb.co/4RNvFpYh/Screenshot-20250905-174501-Gallery.jpg"   
-           alt="DEV Image" border="0">  
-    </a>  
-  </section>    <!-- Navbar -->    <div class="navbar">  
-    <a href="#home">Home</a>  
-    <a href="#plugins">Plugins</a>  
-    <a href="#dev">DEV</a>  
-    <a href="#discord">Discord</a>  
-  </div>    <!-- Discord Section -->    <section id="discord" class="plugins">  
-    <h2>DM Me</h2>  
-    <p>Discord: <strong>alyxz_locked_in</strong></p>  
-  </section>  </body>  
+    <script>
+        // YouTube Audio Setup
+        let audioPlayer;
+        let isPlaying = false;
+        const startOverlay = document.getElementById('startOverlay');
+        const audioContainer = document.getElementById('audioContainer');
+        const audioBtn = document.getElementById('audioBtn');
+        let playerReady = false;
+        
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        
+        // Initialize player when API is ready
+        window.onYouTubeIframeAPIReady = function() {
+            audioPlayer = new YT.Player('audioPlayer', {
+                height: '0',
+                width: '0',
+                videoId: 'TY6KMrkgaH4',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'iv_load_policy': 3,
+                    'loop': 1,
+                    'playlist': 'TY6KMrkgaH4',
+                    'rel': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+        
+        function onPlayerReady(event) {
+            playerReady = true;
+        }
+        
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.ENDED) {
+                audioPlayer.playVideo();
+            }
+        }
+        
+        // Start everything on click
+        startOverlay.addEventListener('click', () => {
+            startOverlay.classList.add('hidden');
+            audioContainer.classList.add('active');
+            
+            if (audioPlayer && audioPlayer.playVideo) {
+                audioPlayer.playVideo();
+                audioPlayer.unMute();
+                isPlaying = true;
+            } else {
+                // If player not ready yet, wait a bit
+                const checkInterval = setInterval(() => {
+                    if (audioPlayer && audioPlayer.playVideo) {
+                        audioPlayer.playVideo();
+                        audioPlayer.unMute();
+                        isPlaying = true;
+                        clearInterval(checkInterval);
+                    }
+                }, 500);
+            }
+        });
+        
+        // Audio toggle button
+        audioBtn.addEventListener('click', () => {
+            if (!audioPlayer) return;
+            
+            if (isPlaying) {
+                audioPlayer.pauseVideo();
+                audioBtn.textContent = '▶';
+                isPlaying = false;
+            } else {
+                audioPlayer.playVideo();
+                audioBtn.textContent = '⏸';
+                isPlaying = true;
+            }
+        });
+    </script>
+</body>
 </html>
